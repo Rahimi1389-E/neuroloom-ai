@@ -525,7 +525,6 @@
         const API_KEY = "AQ.Ab8RN6KVBBJo9pLKWZhvA-oC9k7m305zO2Vsczvlsq3FWy8zLA";
 
         let currentUser = null;
-        // CHATVERLAUF SPEICHERN (Array für das Gedächtnis der KI)
         let chatHistory = [];
 
         window.onload = function() {
@@ -582,16 +581,16 @@
             inputField.value = '';
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Chatverlauf erweitern (Nutzer)
+            // Zur Historie hinzufügen (Gemini Format: user / model)
             chatHistory.push({
                 role: "user",
                 parts: [{ text: messageText }]
             });
 
-            // Lade-Indikator
+            // Ladeanzeige
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'message bot typing-indicator';
-            loadingDiv.textContent = 'Neuroloom tippt...';
+            loadingDiv.textContent = 'Neuroloom schreibt eine Antwort...';
             chatMessages.appendChild(loadingDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -607,7 +606,12 @@
                 const data = await response.json();
                 chatMessages.removeChild(loadingDiv);
 
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                // Prüfen, ob eine gültige Antwort zurückkam
+                if (data.candidates && data.candidates.length > 0 && 
+                    data.candidates[0].content && 
+                    data.candidates[0].content.parts && 
+                    data.candidates[0].content.parts.length > 0) {
+                    
                     const replyText = data.candidates[0].content.parts[0].text;
 
                     const botMsgDiv = document.createElement('div');
@@ -615,22 +619,28 @@
                     botMsgDiv.textContent = replyText;
                     chatMessages.appendChild(botMsgDiv);
 
-                    // Chatverlauf erweitern (Modell)
+                    // Antwort ebenfalls zum Chatverlauf hinzufügen, damit sich die KI erinnert
                     chatHistory.push({
                         role: "model",
                         parts: [{ text: replyText }]
                     });
+                } else if (data.error) {
+                    // Falls die API direkt einen Fehler meldet (z. B. ungültiger Key)
+                    const errorMsgDiv = document.createElement('div');
+                    errorMsgDiv.className = 'message bot';
+                    errorMsgDiv.textContent = "API-Fehler: " + data.error.message;
+                    chatMessages.appendChild(errorMsgDiv);
                 } else {
                     const botMsgDiv = document.createElement('div');
                     botMsgDiv.className = 'message bot';
-                    botMsgDiv.textContent = "Ich konnte das gerade nicht verarbeiten. Bitte frage mich noch einmal!";
+                    botMsgDiv.textContent = "Entschuldigung, ich konnte keine Antwort generieren. Bitte versuche es noch einmal.";
                     chatMessages.appendChild(botMsgDiv);
                 }
             } catch (error) {
                 if (chatMessages.contains(loadingDiv)) chatMessages.removeChild(loadingDiv);
                 const botMsgDiv = document.createElement('div');
                 botMsgDiv.className = 'message bot';
-                botMsgDiv.textContent = "Netzwerkverbindung fehlgeschlagen. Bitte versuche es gleich erneut.";
+                botMsgDiv.textContent = "Verbindungsfehler. Bitte überprüfe deine Internetverbindung.";
                 chatMessages.appendChild(botMsgDiv);
             }
 
@@ -657,5 +667,6 @@
     </script>
 </body>
 </html>
+            
 
 
