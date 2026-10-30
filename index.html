@@ -113,19 +113,66 @@
             transform: translateY(-1px);
         }
 
-        /* --- CHAT APP --- */
+        /* --- CHAT APP MIT SIDEBAR (CHATVERLAUF) --- */
         .chat-app {
             width: 100%;
-            max-width: 900px;
-            height: 85vh;
+            max-width: 1100px;
+            height: 88vh;
             background: rgba(15, 23, 42, 0.90);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 24px;
             display: none;
-            flex-direction: column;
+            flex-direction: row;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
             overflow: hidden;
+        }
+
+        /* Linke Sidebar für den Chatverlauf */
+        .sidebar {
+            width: 260px;
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 16px;
+        }
+
+        .sidebar-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #cbd5e1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Hauptbereich rechts */
+        .main-chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(15, 23, 42, 0.7);
         }
 
         .app-header {
@@ -212,7 +259,7 @@
 
         .suggestions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 12px;
             margin-top: auto;
             margin-bottom: auto;
@@ -425,48 +472,58 @@
         </form>
     </div>
 
-    <!-- CHAT OBERFLÄCHE -->
+    <!-- CHAT OBERFLÄCHE MIT SIDEBAR -->
     <div class="chat-app" id="chatApp">
-        <div class="app-header">
-            <div class="header-left">
-                <div class="logo-nml">NML</div>
-                <select class="model-select" id="modelSelector">
-                    <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ultra Schnell)</option>
-                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (Max-Performance)</option>
-                </select>
-            </div>
-
-            <div class="header-right">
-                <span class="plan-badge" id="currentPlanBadge">Kostenloser Plan</span>
-                <button class="btn-upgrade" onclick="openModal()">⚡ Upgrade</button>
-                <span class="user-profile" id="userDisplayName">User</span>
+        <!-- Linke Sidebar für Chatverlauf -->
+        <div class="sidebar">
+            <div class="sidebar-title">💬 Chatverlauf</div>
+            <div class="history-list" id="historyList">
+                <div style="font-size: 12px; color: #64748b; font-style: italic;">Noch keine Unterhaltungen.</div>
             </div>
         </div>
 
-        <div class="chat-body" id="chatMessages">
-            <div class="message bot">
-                Hallo! Ich bin Neuroloom. Wobei kann ich dir heute helfen? Stelle mir eine Frage oder wähle einen Vorschlag unten.
+        <!-- Rechter Hauptbereich -->
+        <div class="main-chat-area">
+            <div class="app-header">
+                <div class="header-left">
+                    <div class="logo-nml">NML</div>
+                    <select class="model-select" id="modelSelector">
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ultra Schnell)</option>
+                    </select>
+                </div>
+
+                <div class="header-right">
+                    <span class="plan-badge" id="currentPlanBadge">Kostenloser Plan</span>
+                    <button class="btn-upgrade" onclick="openModal()">⚡ Upgrade</button>
+                    <span class="user-profile" id="userDisplayName">User</span>
+                </div>
             </div>
 
-            <div class="suggestions-grid" id="suggestionsGrid">
-                <div class="suggestion-card" onclick="useSuggestion('Erkläre mir die Grundlagen der Quantenphysik in einfachen Worten.')">
-                    <h4>🔬 Quantenphysik</h4>
-                    <p>In einfachen Worten erklärt bekommen.</p>
+            <div class="chat-body" id="chatMessages">
+                <div class="message bot">
+                    Hallo! Ich bin Neuroloom. Wobei kann ich dir heute helfen? Stelle mir eine Frage oder wähle einen Vorschlag unten.
                 </div>
-                <div class="suggestion-card" onclick="useSuggestion('Schreibe mir eine kreative Kurzgeschichte über eine Zeitreise.')">
-                    <h4>📖 Kreative Story</h4>
-                    <p>Eine spannende Zeitreise-Geschichte.</p>
-                </div>
-                <div class="suggestion-card" onclick="useSuggestion('Gib mir 5 gesunde Rezept-Ideen für das Abendessen.')">
-                    <h4>🥗 Rezept-Ideen</h4>
-                    <p>Gesund & schnell gekocht.</p>
+
+                <div class="suggestions-grid" id="suggestionsGrid">
+                    <div class="suggestion-card" onclick="useSuggestion('Erkläre mir die Grundlagen der Quantenphysik in einfachen Worten.')">
+                        <h4>🔬 Quantenphysik</h4>
+                        <p>In einfachen Worten erklärt bekommen.</p>
+                    </div>
+                    <div class="suggestion-card" onclick="useSuggestion('Schreibe mir eine kreative Kurzgeschichte über eine Zeitreise.')">
+                        <h4>📖 Kreative Story</h4>
+                        <p>Eine spannende Zeitreise-Geschichte.</p>
+                    </div>
+                    <div class="suggestion-card" onclick="useSuggestion('Gib mir 5 gesunde Rezept-Ideen für das Abendessen.')">
+                        <h4>🥗 Rezept-Ideen</h4>
+                        <p>Gesund & schnell gekocht.</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="chat-footer">
-            <input type="text" id="userInput" class="chat-input" placeholder="Schreibe eine Nachricht an Neuroloom..." onkeypress="handleKeyPress(event)">
-            <button class="btn-primary" onclick="sendMessage()">Senden</button>
+            <div class="chat-footer">
+                <input type="text" id="userInput" class="chat-input" placeholder="Schreibe eine Nachricht an Neuroloom..." onkeypress="handleKeyPress(event)">
+                <button class="btn-primary" onclick="sendMessage()">Senden</button>
+            </div>
         </div>
     </div>
 
@@ -497,7 +554,7 @@
                         <div class="plan-price">9,99 €<span style="font-size:12px; color:#94a3b8;">/Monat</span></div>
                         <ul class="plan-features">
                             <li>✓ Unbegrenzter Chatverlauf</li>
-                            <li>✓ Gemini 1.5 Pro Modell</li>
+                            <li>✓ Erweiterte Modelle</li>
                             <li>✓ Bevorzugte Geschwindigkeit</li>
                         </ul>
                     </div>
@@ -562,6 +619,19 @@
             sendMessage();
         }
 
+        // Funktion zum Hinzufügen von Einträgen in die linke Sidebar (Chatverlauf)
+        function addHistoryItem(text) {
+            const historyList = document.getElementById('historyList');
+            // Hinweis "Noch keine Unterhaltungen" beim ersten Mal entfernen
+            if (historyList.children.length === 1 && historyList.children[0].tagName === 'DIV' && !historyList.children[0].classList.contains('history-item')) {
+                historyList.innerHTML = '';
+            }
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            item.textContent = text;
+            historyList.appendChild(item);
+        }
+
         async function sendMessage() {
             const inputField = document.getElementById('userInput');
             const messageText = inputField.value.trim();
@@ -572,16 +642,18 @@
 
             const chatMessages = document.getElementById('chatMessages');
 
-            // Nutzer-Nachricht anzeigen
+            // Nutzer-Nachricht im Hauptfenster & Verlauf anzeigen
             const userMsgDiv = document.createElement('div');
             userMsgDiv.className = 'message user';
             userMsgDiv.textContent = messageText;
             chatMessages.appendChild(userMsgDiv);
 
+            addHistoryItem(messageText);
+
             inputField.value = '';
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Zur Historie hinzufügen (Gemini Format: user / model)
+            // Zur Historie hinzufügen
             chatHistory.push({
                 role: "user",
                 parts: [{ text: messageText }]
@@ -606,7 +678,6 @@
                 const data = await response.json();
                 chatMessages.removeChild(loadingDiv);
 
-                // Prüfen, ob eine gültige Antwort zurückkam
                 if (data.candidates && data.candidates.length > 0 && 
                     data.candidates[0].content && 
                     data.candidates[0].content.parts && 
@@ -619,28 +690,27 @@
                     botMsgDiv.textContent = replyText;
                     chatMessages.appendChild(botMsgDiv);
 
-                    // Antwort ebenfalls zum Chatverlauf hinzufügen, damit sich die KI erinnert
+                    // Antwort zum Gedächtnis hinzufügen
                     chatHistory.push({
                         role: "model",
                         parts: [{ text: replyText }]
                     });
                 } else if (data.error) {
-                    // Falls die API direkt einen Fehler meldet (z. B. ungültiger Key)
                     const errorMsgDiv = document.createElement('div');
                     errorMsgDiv.className = 'message bot';
-                    errorMsgDiv.textContent = "API-Fehler: " + data.error.message;
+                    errorMsgDiv.textContent = "Fehler: " + data.error.message;
                     chatMessages.appendChild(errorMsgDiv);
                 } else {
                     const botMsgDiv = document.createElement('div');
                     botMsgDiv.className = 'message bot';
-                    botMsgDiv.textContent = "Entschuldigung, ich konnte keine Antwort generieren. Bitte versuche es noch einmal.";
+                    botMsgDiv.textContent = "Entschuldigung, ich konnte keine Antwort generieren.";
                     chatMessages.appendChild(botMsgDiv);
                 }
             } catch (error) {
                 if (chatMessages.contains(loadingDiv)) chatMessages.removeChild(loadingDiv);
                 const botMsgDiv = document.createElement('div');
-                botMsgDiv.className = 'message bot';
-                botMsgDiv.textContent = "Verbindungsfehler. Bitte überprüfe deine Internetverbindung.";
+                botMsgDiv.className, 'message bot';
+                botMsgDiv.textContent = "Verbindungsfehler aufgetreten.";
                 chatMessages.appendChild(botMsgDiv);
             }
 
