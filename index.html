@@ -113,7 +113,7 @@
             transform: translateY(-1px);
         }
 
-        /* --- CHAT APP MIT SIDEBAR (CHATVERLAUF) --- */
+        /* --- CHAT APP MIT SIDEBAR --- */
         .chat-app {
             width: 100%;
             max-width: 1100px;
@@ -128,7 +128,6 @@
             overflow: hidden;
         }
 
-        /* Linke Sidebar für den Chatverlauf */
         .sidebar {
             width: 260px;
             background: rgba(15, 23, 42, 0.95);
@@ -167,7 +166,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Hauptbereich rechts */
         .main-chat-area {
             flex: 1;
             display: flex;
@@ -211,7 +209,6 @@
             font-size: 13px;
             font-weight: 600;
             outline: none;
-            cursor: pointer;
         }
 
         .header-right {
@@ -247,7 +244,6 @@
             font-weight: 600;
         }
 
-        /* Chat Body */
         .chat-body {
             flex: 1;
             padding: 24px;
@@ -292,7 +288,6 @@
             color: #94a3b8;
         }
 
-        /* Nachrichten */
         .message {
             max-width: 80%;
             padding: 14px 18px;
@@ -324,7 +319,6 @@
             font-size: 13px;
         }
 
-        /* Eingabe */
         .chat-footer {
             padding: 20px;
             background: rgba(30, 41, 59, 0.8);
@@ -348,7 +342,6 @@
             border-color: #2563eb;
         }
 
-        /* MODAL */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -472,9 +465,8 @@
         </form>
     </div>
 
-    <!-- CHAT OBERFLÄCHE MIT SIDEBAR -->
+    <!-- CHAT OBERFLÄCHE -->
     <div class="chat-app" id="chatApp">
-        <!-- Linke Sidebar für Chatverlauf -->
         <div class="sidebar">
             <div class="sidebar-title">💬 Chatverlauf</div>
             <div class="history-list" id="historyList">
@@ -482,13 +474,12 @@
             </div>
         </div>
 
-        <!-- Rechter Hauptbereich -->
         <div class="main-chat-area">
             <div class="app-header">
                 <div class="header-left">
                     <div class="logo-nml">NML</div>
-                    <select class="model-select" id="modelSelector">
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ultra Schnell)</option>
+                    <select class="model-select" id="modelSelector" disabled>
+                        <option value="gemini-pro">Gemini Pro (Standard)</option>
                     </select>
                 </div>
 
@@ -541,7 +532,7 @@
                         <div class="plan-price">0 €</div>
                         <ul class="plan-features">
                             <li>✓ Standard Antworten</li>
-                            <li>✓ Gemini 1.5 Flash Modell</li>
+                            <li>✓ Gemini Pro Modell</li>
                             <li>✓ Schnelle Geschwindigkeit</li>
                         </ul>
                     </div>
@@ -554,7 +545,7 @@
                         <div class="plan-price">9,99 €<span style="font-size:12px; color:#94a3b8;">/Monat</span></div>
                         <ul class="plan-features">
                             <li>✓ Unbegrenzter Chatverlauf</li>
-                            <li>✓ Erweiterte Modelle</li>
+                            <li>✓ Erweiterte Funktionen</li>
                             <li>✓ Bevorzugte Geschwindigkeit</li>
                         </ul>
                     </div>
@@ -619,10 +610,8 @@
             sendMessage();
         }
 
-        // Funktion zum Hinzufügen von Einträgen in die linke Sidebar (Chatverlauf)
         function addHistoryItem(text) {
             const historyList = document.getElementById('historyList');
-            // Hinweis "Noch keine Unterhaltungen" beim ersten Mal entfernen
             if (historyList.children.length === 1 && historyList.children[0].tagName === 'DIV' && !historyList.children[0].classList.contains('history-item')) {
                 historyList.innerHTML = '';
             }
@@ -642,7 +631,7 @@
 
             const chatMessages = document.getElementById('chatMessages');
 
-            // Nutzer-Nachricht im Hauptfenster & Verlauf anzeigen
+            // Nutzer-Nachricht anzeigen
             const userMsgDiv = document.createElement('div');
             userMsgDiv.className = 'message user';
             userMsgDiv.textContent = messageText;
@@ -653,7 +642,6 @@
             inputField.value = '';
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Zur Historie hinzufügen
             chatHistory.push({
                 role: "user",
                 parts: [{ text: messageText }]
@@ -666,10 +654,9 @@
             chatMessages.appendChild(loadingDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            const selectedModel = document.getElementById('modelSelector').value;
-
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${API_KEY}`, {
+                // Wir nutzen hier den absolut sicheren Endpunkt für gemini-pro
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: chatHistory })
@@ -690,7 +677,6 @@
                     botMsgDiv.textContent = replyText;
                     chatMessages.appendChild(botMsgDiv);
 
-                    // Antwort zum Gedächtnis hinzufügen
                     chatHistory.push({
                         role: "model",
                         parts: [{ text: replyText }]
@@ -698,7 +684,7 @@
                 } else if (data.error) {
                     const errorMsgDiv = document.createElement('div');
                     errorMsgDiv.className = 'message bot';
-                    errorMsgDiv.textContent = "Fehler: " + data.error.message;
+                    errorMsgDiv.textContent = "API-Fehler: " + data.error.message;
                     chatMessages.appendChild(errorMsgDiv);
                 } else {
                     const botMsgDiv = document.createElement('div');
@@ -709,7 +695,7 @@
             } catch (error) {
                 if (chatMessages.contains(loadingDiv)) chatMessages.removeChild(loadingDiv);
                 const botMsgDiv = document.createElement('div');
-                botMsgDiv.className, 'message bot';
+                botMsgDiv.className = 'message bot';
                 botMsgDiv.textContent = "Verbindungsfehler aufgetreten.";
                 chatMessages.appendChild(botMsgDiv);
             }
